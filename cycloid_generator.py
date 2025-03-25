@@ -1,26 +1,11 @@
-# Has been stolen here: https://github.com/RepRapLtd/RobotComponents
-#
-# Cycloidal drive creation program
-#
-# RepRap Ltd
-# https://reprapltd.com
-#
-# Written by Adrian Bowyer
-# 30 September 2021
-#
-# Licence: GPL
-#
-# This builds all the basic geometry needed for a cycloidal drive.
-#
-# Note - it makes exact geometry*; it doesn't offset shapes to allow clearances, so you probably want to
-# do things like saying the pins and rollers are 0.1mm bigger than they actually are - experiment.
-#
-# *Well, exact: the cycloidal disc it creates is a many-faceted approximation to the true algebra.
-# The faceting can be made as fine as you like though.
+# This script borrows code from projects:
+# 
+# https://github.com/RepRapLtd/RobotComponents
+# https://www.tec-science.com/mechanical-power-transmission/planetary-gear/construction-of-the-cycloidal-disc/
+# https://wiki.freecad.org/Macro_screw_maker1_2
+# https://gist.github.com/gbroques/d52f31fe629392017d254b4d71b91516
 
 import sys
-#print(sys.path)
-
 import math
 import Part
 from FreeCAD import Base, Matrix, Vector
