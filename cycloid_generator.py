@@ -1,24 +1,14 @@
 # This script borrows code from projects:
-# 
+#
 # https://github.com/RepRapLtd/RobotComponents
 # https://www.tec-science.com/mechanical-power-transmission/planetary-gear/construction-of-the-cycloidal-disc/
 # https://wiki.freecad.org/Macro_screw_maker1_2
 # https://gist.github.com/gbroques/d52f31fe629392017d254b4d71b91516
 
-import sys
-import math
 import Part
 from FreeCAD import Base, Matrix, Vector
-from math import radians, sqrt
-
-# *****************************************************************************************************************************
-
-# Put numbers in here.
-# See https://www.tec-science.com/mechanical-power-transmission/planetary-gear/construction-of-the-cycloidal-disc/
-# All dimensions are in mm.
 
 D = 45.0  # Pin circle centres diameter
-
 n = 9  # Number of lobes
 N = 10  # Number of pins
 
@@ -52,11 +42,13 @@ holes = 3  # Number of roller holes (must equal n or divide into n exactly)
 cycloid_length = eccentric_bearing_length  # 4mm How thick to make the contracted cycloid disc
 dr = small_bearing_external_diameter  # 6mm Inner roller pin diameter (bearing diameter)
 
-bearing_stop_length = 2.0  # Thickness of stop for ring and roller bearings
+stop_thickness = 2.0  # Thickness of stop for ring and roller bearings
 dd = 25.5  # Inner roller pin centres diameter
 ddd = ring_bearing_internal_diameter  # 30mm inner roller diameter, should be equal to inner bearing diameter
 eFactor = 0.3  # Sets the eccentricity. Must be less than 0.5. If it's too big the faceting will be inaccurate, so increase circle below.
-lip = -1  # Create a lip to constrain axial drift. Set to -1 to supress.
+
+gap = 0.1 # We need some clearance in some parts, otherwise our mechanism will not move.
+
 # Sets the faceting to correspond to 1 degree; a 360-faced polygon.
 circle = 800
 # Bigger for finer faceting (use even numbers).
@@ -5182,8 +5174,6 @@ def make_hexagon_wire(minimal_diameter: float) -> Part.Wire:
 # so we have to go +3 at the end to join up.
 def contracted_cycloid_blank(pin_diameter=6.0, _cycloid_length=4.0):
     offsetCycloid = []
-    if lip > 0:
-        lipWire = []
     x = d / 2 + delta / 2
     y = 0
     circle_pi = circle * 0.5
@@ -5196,9 +5186,6 @@ def contracted_cycloid_blank(pin_diameter=6.0, _cycloid_length=4.0):
         if theta >= 2:
             dxy = normal_vector(xOld, xNew, yOld, yNew, pin_diameter / 2)
             offsetCycloid.append(App.Vector(x + dxy[0], y + dxy[1], 0))
-            if lip > 0:
-                dxy = normal_vector(xOld, xNew, yOld, yNew, pin_diameter / 2 - lip)
-                lipWire.append(App.Vector(x + dxy[0], y + dxy[1], 0))
         xOld = x
         yOld = y
         x = xNew
@@ -5206,21 +5193,7 @@ def contracted_cycloid_blank(pin_diameter=6.0, _cycloid_length=4.0):
     offset_cycloid_wire = Part.makePolygon(offsetCycloid)
     face = Part.Face(offset_cycloid_wire)
     result = face.extrude(Base.Vector(0, 0, _cycloid_length))
-    if lip > 0:
-        lipWire = Part.makePolygon(lipWire)
-        lipWire.translate(Base.Vector(0, 0, -lip))
-        lipFace1 = Part.Face(lipWire)
-        lipExtrude1 = lipFace1.extrude(Base.Vector(0, 0, -lip))
-        lipExtrude2 = lipExtrude1.copy().translate(Base.Vector(0, 0, _cycloid_length + 3 * lip))
-        loft = [lipWire, offset_cycloid_wire]
-        loft = Part.makeLoft(loft, True, False)
-        lipWire.translate(Base.Vector(0, 0, _cycloid_length + 2 * lip))
-        offset_cycloid_wire.translate(Base.Vector(0, 0, _cycloid_length))
-        loft2 = [lipWire, offset_cycloid_wire]
-        loft2 = Part.makeLoft(loft2, True, False)
-        result = result.fuse(loft).fuse(loft2).fuse(lipExtrude1).fuse(lipExtrude2)
     return result
-
 
 # This builds the contracted cycloid and contra-cycloid with the central holes, eccentric and central axis hole.
 def contracted_cycloid(dd,
@@ -5259,13 +5232,6 @@ def normal_vector(xOld, xNew, yOld, yNew, r):
 
 def roller_hole():
     roller = Part.makeCylinder(dh / 2, cycloid_length, Base.Vector(0, 0, 0), Base.Vector(0, 0, 1))
-    if lip > 0:
-        roller = roller.fuse(
-            Part.makeCone(dh / 2, dh / 2 - lip, lip, Base.Vector(0, 0, cycloid_length), Base.Vector(0, 0, 1)))
-        roller = roller.fuse(Part.makeCone(dh / 2, dh / 2 - lip, lip, Base.Vector(0, 0, 0), Base.Vector(0, 0, -1)))
-        roller = roller.fuse(
-            Part.makeCylinder(dh / 2 - lip, lip, Base.Vector(0, 0, cycloid_length + lip), Base.Vector(0, 0, 1)))
-        roller = roller.fuse(Part.makeCylinder(dh / 2 - lip, lip, Base.Vector(0, 0, -lip), Base.Vector(0, 0, -1)))
     return roller
 
 
@@ -5300,24 +5266,25 @@ def eccentric(diameter=10.0,
 
 
 def forth_roller(_holes=3,
+                 _ring_bearing_external_diameter=42.0,
                  _ring_bearing_internal_diameter=30.0,
                  _ring_bearing_length=7.0,
-                 roller_small_bearing_internal_diameter=3.0,
+                 _small_bearing_internal_diameter=3.0,
                  _eccentric_bearing_length=4.0,
-                 stop_length=2.0,
+                 _stop_thickness=2.0,
                  _inner_roller_back_length=5.0):
     inner_roller = Part.makeCylinder(_ring_bearing_internal_diameter / 2,
-                                     _ring_bearing_length + stop_length + 0.2,
+                                     _ring_bearing_length + _stop_thickness * 2,
                                      Base.Vector(0, 0, 0),
                                      Base.Vector(0, 0, 1))
-    stopper_ring = Part.makeCylinder(_ring_bearing_internal_diameter / 2 + 0.2,
-                                     0.2,
+    stopper_ring = Part.makeCylinder(_ring_bearing_external_diameter / 2 - gap * 2,
+                                     _stop_thickness,
                                      Base.Vector(0, 0, 0),
                                      Base.Vector(0, 0, 1))
     inner_roller = inner_roller.fuse(stopper_ring)
     inner_roller.translate(Base.Vector(0, 0, _eccentric_bearing_length * 2 + 0.1))
     for r in range(_holes):
-        pin_axis = Part.makeCylinder(roller_small_bearing_internal_diameter / 2,
+        pin_axis = Part.makeCylinder(_small_bearing_internal_diameter / 2,
                                      _ring_bearing_length * 2
                                      + _eccentric_bearing_length * 2
                                      + 0.1
@@ -5327,7 +5294,7 @@ def forth_roller(_holes=3,
         pin_axis.rotate(Base.Vector(0, 0, 0), Base.Vector(0, 0, 1), r * 360 / _holes)
         pin_axis.translate(Base.Vector(0, 0, -_inner_roller_back_length * 1.5))
         inner_roller = inner_roller.cut(pin_axis)
-    central_axis = Part.makeCylinder(roller_small_bearing_internal_diameter / 2,
+    central_axis = Part.makeCylinder(_small_bearing_internal_diameter / 2,
                                      100.0,
                                      Base.Vector(0, 0, -50),
                                      Base.Vector(0, 0, 50))
@@ -5337,22 +5304,18 @@ def forth_roller(_holes=3,
 
 
 def back_roller(_holes=3,
-                _ring_bearing_internal_diameter=30.0,
+                _diameter=38.0,
                 _ring_bearing_length=7.0,
-                roller_small_bearing_external_diameter=6.0,
-                roller_small_bearing_internal_diameter=3.0,
+                _small_bearing_internal_diameter=3.0,
                 _eccentric_bearing_length=4.0,
-                stop_length=2.0,
                 _inner_roller_back_length=5.0):
-    inner_roller_back = Part.makeCylinder(_ring_bearing_internal_diameter / 2
-                                          + roller_small_bearing_external_diameter / 2
-                                          + stop_length / 2,
+    inner_roller_back = Part.makeCylinder(_diameter / 2,
                                           _inner_roller_back_length,
                                           Base.Vector(0, 0, 0),
                                           Base.Vector(0, 0, 1))
     inner_roller_back.translate(Base.Vector(0, 0, -_inner_roller_back_length))
     for r in range(_holes):
-        pin_axis = Part.makeCylinder(roller_small_bearing_internal_diameter / 2,
+        pin_axis = Part.makeCylinder(_small_bearing_internal_diameter / 2,
                                      _ring_bearing_length * 2
                                      + _eccentric_bearing_length * 2
                                      + 0.1
@@ -5362,10 +5325,10 @@ def back_roller(_holes=3,
         pin_axis.rotate(Base.Vector(0, 0, 0), Base.Vector(0, 0, 1), r * 360 / _holes)
         pin_axis.translate(Base.Vector(0, 0, -_inner_roller_back_length * 1.5))
         inner_roller_back = inner_roller_back.cut(pin_axis)
-    central_axis = Part.makeCylinder(roller_small_bearing_internal_diameter / 2,
-                               100,
-                               Base.Vector(0, 0, -50),
-                               Base.Vector(0, 0, 50))
+    central_axis = Part.makeCylinder(_small_bearing_internal_diameter / 2,
+                                     100,
+                                     Base.Vector(0, 0, -50),
+                                     Base.Vector(0, 0, 50))
     inner_roller_back = inner_roller_back.cut(central_axis)
     inner_roller_back.removeSplitter()
     return inner_roller_back
@@ -5395,17 +5358,17 @@ def ring_base(external_diameter=45.0,
               _cycloid_length=8.0,
               bearing_diameter=42.0,
               bearing_length=7.0,
-              eccentricity=2.0):
+              eccentricity=2.0,
+              stop_length=2.0):
     r0 = Part.makeCylinder(external_diameter / 2,
-                           _cycloid_length,
+                           _cycloid_length + stop_length,
                            Base.Vector(0, 0, 0),
                            Base.Vector(0, 0, 1))
     r0 = r0.cut(
          Part.makeCylinder(external_diameter / 2 - (external_diameter - bearing_diameter) / 2 + eccentricity,
-                           _cycloid_length,
+                           _cycloid_length  + stop_length,
                            Base.Vector(0, 0, 0),
                            Base.Vector(0, 0, 1)))
-
     r1 = Part.makeCylinder(external_diameter / 2,
                              bearing_length,
                              Base.Vector(0, 0, 0),
@@ -5414,7 +5377,7 @@ def ring_base(external_diameter=45.0,
                                       bearing_length,
                                       Base.Vector(0, 0, 0),
                                       Base.Vector(0, 0, 1)))
-    r1 = r1.translate(Base.Vector(0, 0, _cycloid_length))
+    r1 = r1.translate(Base.Vector(0, 0, _cycloid_length + stop_length))
     r1 = r1.fuse(r0)
     r1.removeSplitter()
     return r1
@@ -5464,15 +5427,18 @@ def ring(count=10,
                                stop_length,
                                Base.Vector(0, 0, 0),
                                Base.Vector(0, 0, 1)))
-    stop.translate(Base.Vector(0, 0, _cycloid_length * 2 + big_bearing_length))
-    r4 = ring_cover(external_diameter + pin_external_diameter + 2, stop_length, pin_external_diameter, 8.0)
+    stop.translate(Base.Vector(0, 0, _cycloid_length * 2 + big_bearing_length + stop_length))
+    r4 = ring_cover(external_diameter + pin_external_diameter + 2,
+                    stop_length,
+                    pin_external_diameter,
+                    8.0)
     r4.translate(Base.Vector(0, 0, -8))
     r2 = r2.fuse(r4)
     r2 = r2.fuse(stop)
     pins = get_pins(count, external_diameter, pin_internal_diameter, 1000)
     pins.translate(Base.Vector(0, 0, -8))
     r2 = r2.cut(pins)
-    bearings = get_pins(count, external_diameter, pin_external_diameter, _cycloid_length * 2)
+    bearings = get_pins(count, external_diameter, pin_external_diameter + gap * 2, _cycloid_length * 2)
     r2 = r2.cut(bearings)
     r2.removeSplitter()
     return r2
@@ -5483,19 +5449,28 @@ def cover(count=10,
           pin_internal_diameter=3.0,
           length=8.0,
           diameter=45.0,
-          z=-8.0):
+          _inner_roller_back_diameter=38.0,
+          _inner_roller_back_length=4.5):
     c = Part.makeCylinder(diameter / 2 + pin_external_diameter / 2 + 1,
-                          length,
+                          length + _inner_roller_back_length,
                           Base.Vector(0, 0, 0),
-                          Base.Vector(0, 0, 1)).cut(Part.makeCylinder(pin_internal_diameter / 2,
-                                                                      length,
-                                                                      Base.Vector(0, 0, 0),
-                                                                      Base.Vector(0, 0, 1)))
-
+                          Base.Vector(0, 0, 1))
+    back_roller_cut = Part.makeCylinder(_inner_roller_back_diameter / 2 + gap * 2,
+                                        _inner_roller_back_length,
+                                        Base.Vector(0, 0, 0),
+                                        Base.Vector(0, 0, 1))
+    back_roller_cut.translate(Base.Vector(0, 0, length))
+    c = c.cut(back_roller_cut)
+    c = c.cut(Part.makeCylinder(pin_internal_diameter / 2,
+                                length + _inner_roller_back_length,
+                                Base.Vector(0, 0, 0),
+                                Base.Vector(0, 0, 1)))
+    # roller_ring.translate(Base.Vector(0, 0, length))
+    # c = c.fuse(roller_ring)
     pins = get_pins(count, diameter, pin_internal_diameter, 1000)
-    pins.translate(Base.Vector(0, 0, z))
+    pins.translate(Base.Vector(0, 0, -100))
     c = c.cut(pins)
-    c.translate(Base.Vector(0, 0, z))
+    # c.translate(Base.Vector(0, 0, z))
     return c
 
 
@@ -5548,30 +5523,31 @@ contr_cycloid = contracted_cycloid(dd,
                                    180.0)
 external_bearings = get_bearings(N,
                                  D,
-                                 small_bearing_external_diameter,
+                                 small_bearing_external_diameter + gap,
                                  small_bearing_internal_diameter,
                                  cycloid_length)
 
 roller_disc_forth = forth_roller(holes,
+                                 ring_bearing_external_diameter,
                                  ring_bearing_internal_diameter,
                                  ring_bearing_length,
                                  small_bearing_internal_diameter,
                                  eccentric_bearing_length,
-                                 bearing_stop_length,
+                                 stop_thickness,
                                  (inner_roller_back_length + 0.5))
 
+roller_disc_back_diameter = ring_bearing_internal_diameter + small_bearing_external_diameter + stop_thickness
+
 roller_disc_back = back_roller(holes,
-                               ring_bearing_internal_diameter,
+                               roller_disc_back_diameter,
                                ring_bearing_length,
-                               small_bearing_external_diameter,
                                small_bearing_internal_diameter,
                                eccentric_bearing_length,
-                               bearing_stop_length,
                                inner_roller_back_length)
 
 internal_bearings = get_bearings(holes,
                                  dd,
-                                 small_bearing_external_diameter,
+                                 small_bearing_external_diameter + gap,
                                  small_bearing_internal_diameter,
                                  cycloid_length)
 
@@ -5580,10 +5556,10 @@ ring = ring(N,
             small_bearing_internal_diameter,
             eccentric_bearing_length,
             D,
-            42.0,
-            7.0,
-            30.0,
-            2.0,
+            ring_bearing_external_diameter,
+            ring_bearing_length,
+            ring_bearing_internal_diameter,
+            stop_thickness,
             2.0)
 
 cover = cover(N,
@@ -5591,9 +5567,11 @@ cover = cover(N,
               small_bearing_internal_diameter,
               cover_length,
               D,
-              -(eccentric_bearing_length * 2 + 0.1 + (inner_roller_back_length + 0.5)))
+              roller_disc_back_diameter,
+              inner_roller_back_length)
+cover = cover.translate(Base.Vector(0, 0, -(eccentric_bearing_length * 2 + 0.1 + (inner_roller_back_length + 0.5))))
 
-axial_bearing = Part.makeCylinder(axial_bearing_external_diameter / 2,
+axial_bearing = Part.makeCylinder(axial_bearing_external_diameter / 2 + gap / 4,
                                   axial_bearing_length,
                                   Base.Vector(0, 0, 0),
                                   Base.Vector(0, 0, 1))
@@ -5601,7 +5579,7 @@ axial_bearing.translate(Base.Vector(0, 0, -axial_bearing_length / 2 - (inner_rol
 
 cover = cover.cut(ring)
 cover = cover.cut(axial_bearing)
-back_nuts_position = -(inner_roller_back_length + cover_length) + nut_length - 0.1
+back_nuts_position = -((inner_roller_back_length + 0.5) + cover_length) + nut_length - 0.1
 back_nuts = get_nuts(N, D, back_nuts_position, screw_diameter, nut_length)
 cover = cover.cut(back_nuts)
 
@@ -5613,30 +5591,31 @@ roller_disc_back = roller_disc_back.cut(roller_nuts)
 
 motor_diameter = 27.5
 motor_length = 24.7
-motor_position = -(inner_roller_back_length + cover_length + motor_length)
+motor_position = -(inner_roller_back_length + cover_length + gap + motor_length)
 motor = get_motor(motor_diameter, motor_length, motor_position, central_axis_diameter)
 
 motor_screws = get_motor_screws(10.0, -inner_roller_back_length)
 cover = cover.cut(motor_screws)
-#Part.show(motor_screws)
 
 Part.show(eccentric)
-App.ActiveDocument.getObject("Shape").Label = "Eccentric"
 Part.show(cycloid)
-App.ActiveDocument.getObject("Shape001").Label = "Cycloid"
 Part.show(contr_cycloid)
-App.ActiveDocument.getObject("Shape002").Label = "ContrCycloid"
 Part.show(external_bearings)
-App.ActiveDocument.getObject("Shape003").Label = "ExternalBearers"
 Part.show(roller_disc_forth)
-App.ActiveDocument.getObject("Shape004").Label = "RollerForth"
 Part.show(roller_disc_back)
-App.ActiveDocument.getObject("Shape005").Label = "RollerBack"
 Part.show(internal_bearings)
-App.ActiveDocument.getObject("Shape006").Label = "InternalBearers"
 Part.show(ring)
-App.ActiveDocument.getObject("Shape007").Label = "Ring"
 Part.show(cover)
-App.ActiveDocument.getObject("Shape008").Label = "Cover"
 Part.show(motor)
+App.ActiveDocument.getObject("Shape").Label = "Eccentric"
+App.ActiveDocument.getObject("Shape001").Label = "Cycloid"
+App.ActiveDocument.getObject("Shape002").Label = "ContrCycloid"
+App.ActiveDocument.getObject("Shape003").Label = "ExternalBearers"
+App.ActiveDocument.getObject("Shape004").Label = "RollerForth"
+App.ActiveDocument.getObject("Shape005").Label = "RollerBack"
+App.ActiveDocument.getObject("Shape006").Label = "InternalBearers"
+App.ActiveDocument.getObject("Shape007").Label = "Ring"
+App.ActiveDocument.getObject("Shape008").Label = "Cover"
 App.ActiveDocument.getObject("Shape009").Label = "Motor"
+
+#Part.show(motor_screws)
