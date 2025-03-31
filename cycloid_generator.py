@@ -5505,6 +5505,31 @@ def get_motor(diameter=27.0, length=25.0, z=0.0, _central_axis_diameter=3.0):
     return _motor
 
 
+def get_motor_cover(diameter=27.0, length=26.4, _central_axis_diameter=5.0, _thickness=4.0, _gap=1.5, z=0.0):
+    _motor_space = Part.makeCylinder((diameter + _gap) / 2,
+                                     length + _gap,
+                                     Base.Vector(0, 0, 0),
+                                     Base.Vector(0, 0, 1))
+    _motor_space.translate(Base.Vector(0, 0, _thickness + _gap / 2))
+    _box_cut = Part.makeBox(length, diameter + _gap, 1000,
+                            Base.Vector(0, -500, 0),
+                            Base.Vector(0, 500, 0))
+    _box_cut.translate(Base.Vector(0, 0, _thickness + _gap / 2))
+    _axis = Part.makeCylinder(_central_axis_diameter / 2,
+                              length * 2.2,
+                              Base.Vector(0, 0, -0.5),
+                              Base.Vector(0, 0, 0.5))
+    _motor_cover = Part.makeCylinder((diameter + _thickness) / 2,
+                                     length + _thickness * 2,
+                                     Base.Vector(0, 0, 0),
+                                     Base.Vector(0, 0, 1))
+    _motor_cover = _motor_cover.cut(_motor_space)
+    _motor_cover = _motor_cover.cut(_box_cut)
+    _motor_cover = _motor_cover.cut(_axis)
+    _motor_cover.translate(Base.Vector(0, 0, z))
+    return _motor_cover
+
+
 eccentric = eccentric(eccentric_bearing_internal_diameter,
                       cycloid_length,
                       central_axis_diameter,
@@ -5591,11 +5616,15 @@ roller_disc_back = roller_disc_back.cut(roller_nuts)
 
 motor_diameter = 27.5
 motor_length = 24.7
-motor_position = -(inner_roller_back_length + cover_length + gap + motor_length)
+thickness = 4.0
+motor_cover_gap = 1.5
+motor_position = -(inner_roller_back_length + cover_length + gap + motor_length + thickness)
 motor = get_motor(motor_diameter, motor_length, motor_position, central_axis_diameter)
 
-motor_screws = get_motor_screws(10.0, -inner_roller_back_length)
+motor_screws = get_motor_screws(20.0, -inner_roller_back_length)
 cover = cover.cut(motor_screws)
+motor_cover = get_motor_cover(motor_diameter, motor_length, 5.0, 4.0, motor_cover_gap, motor_position - thickness - motor_cover_gap / 2)
+motor_cover = motor_cover.cut(motor_screws)
 
 Part.show(eccentric)
 Part.show(cycloid)
@@ -5607,6 +5636,7 @@ Part.show(internal_bearings)
 Part.show(ring)
 Part.show(cover)
 Part.show(motor)
+Part.show(motor_cover)
 App.ActiveDocument.getObject("Shape").Label = "Eccentric"
 App.ActiveDocument.getObject("Shape001").Label = "Cycloid"
 App.ActiveDocument.getObject("Shape002").Label = "ContrCycloid"
@@ -5617,5 +5647,6 @@ App.ActiveDocument.getObject("Shape006").Label = "InternalBearers"
 App.ActiveDocument.getObject("Shape007").Label = "Ring"
 App.ActiveDocument.getObject("Shape008").Label = "Cover"
 App.ActiveDocument.getObject("Shape009").Label = "Motor"
+App.ActiveDocument.getObject("Shape010").Label = "MotorCover"
 
 #Part.show(motor_screws)
