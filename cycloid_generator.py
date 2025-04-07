@@ -5505,7 +5505,7 @@ def get_motor(diameter=27.0, length=25.0, z=0.0, _central_axis_diameter=3.0):
     return _motor
 
 
-def get_motor_cover(diameter=27.0, length=26.4, _central_axis_diameter=5.0, _thickness=4.0, _gap=1.5, z=0.0):
+def get_motor_cover(diameter=27.0, length=30.0, _central_axis_diameter=5.0, _thickness=4.0, _gap=1.5, z=0.0):
     _motor_space = Part.makeCylinder((diameter + _gap) / 2,
                                      length + _gap,
                                      Base.Vector(0, 0, 0),
@@ -5519,10 +5519,21 @@ def get_motor_cover(diameter=27.0, length=26.4, _central_axis_diameter=5.0, _thi
                               length * 2.2,
                               Base.Vector(0, 0, -0.5),
                               Base.Vector(0, 0, 0.5))
-    _motor_cover = Part.makeCylinder((diameter + _thickness) / 2,
-                                     length + _thickness * 2,
-                                     Base.Vector(0, 0, 0),
-                                     Base.Vector(0, 0, 1))
+    # _motor_cover = Part.makeCylinder((diameter + _thickness) / 2,
+    #                                  length + _thickness * 2,
+    #                                  Base.Vector(0, 0, 0),
+    #                                  Base.Vector(0, 0, 1))
+    doc = App.activeDocument()
+
+    _motor_obj_cover = doc.addObject("Part::Prism", "MotorCover")
+    _motor_obj_cover.Polygon = 8
+    _motor_obj_cover.Circumradius = (diameter + _thickness) / 2
+    _motor_obj_cover.Height = length + _thickness * 2
+    _motor_obj_cover.FirstAngle = 0.0
+    _motor_obj_cover.SecondAngle = 0.0
+    _motor_obj_cover.Placement = App.Placement(App.Vector(0.0, 0.0, 0.0), App.Rotation(0.0, 0.0, 0.0))
+    doc.recompute()
+    _motor_cover = _motor_obj_cover.Shape
     _motor_cover = _motor_cover.cut(_motor_space)
     _motor_cover = _motor_cover.cut(_box_cut)
     _motor_cover = _motor_cover.cut(_axis)
@@ -5617,7 +5628,7 @@ roller_disc_back = roller_disc_back.cut(roller_nuts)
 motor_diameter = 27.5
 motor_length = 24.7
 thickness = 4.0
-motor_cover_gap = 1.5
+motor_cover_gap = 2.5
 motor_position = -(inner_roller_back_length + cover_length + gap + motor_length + thickness)
 motor = get_motor(motor_diameter, motor_length, motor_position, central_axis_diameter)
 
