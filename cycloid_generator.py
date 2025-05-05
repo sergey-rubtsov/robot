@@ -5517,19 +5517,20 @@ def get_motor_cover(diameter=27.0, length=30.0, _central_axis_diameter=5.0, _thi
                                      Base.Vector(0, 0, 0),
                                      Base.Vector(0, 0, 1))
 
-    _box_cut = Part.makeBox(length + _gap, diameter + _gap, 1000,
-                            Base.Vector(0, -500, 0),
-                            Base.Vector(0, 500, 1))
+    _cut = Part.makeBox(0.1,
+                        500,
+                        500,
+                        Base.Vector(0, 0, 0),
+                        Base.Vector(1, 1, 0))
 
+    _cut.rotate(Base.Vector(0, 0, 0), Base.Vector(0, 0, 1), -45.0)
+    _cut.translate(Base.Vector(-250, 0, 250))
+    _cut.rotate(Base.Vector(0, 0, 0), Base.Vector(0, 0, 1), 45.0 / 2)
     _axis = Part.makeCylinder(_central_axis_diameter / 2,
                               1000,
                               Base.Vector(0, 0, 0),
                               Base.Vector(0, 0, 1))
 
-    # _motor_cover = Part.makeCylinder((diameter + _thickness) / 2,
-    #                                  length + _thickness * 2,
-    #                                  Base.Vector(0, 0, 0),
-    #                                  Base.Vector(0, 0, 1))
     doc = App.activeDocument()
 
     _motor_obj_cover = doc.addObject("Part::Prism", "MotorCover")
@@ -5546,13 +5547,13 @@ def get_motor_cover(diameter=27.0, length=30.0, _central_axis_diameter=5.0, _thi
     #_motor_space.translate(Base.Vector(0, 0, _thickness - _gap))
     #_box_cut.translate(Base.Vector(0, 0, _thickness + _gap / 2))
     _motor_cover = _motor_cover.cut(_motor_space)
-    _motor_cover = _motor_cover.cut(_box_cut)
+    _motor_cover = _motor_cover.cut(_cut)
     _motor_cover = _motor_cover.cut(_axis)
 
     _motor_cover.translate(Base.Vector(0, 0, z))
 
     #Part.show(_motor_space)
-    #Part.show(_box_cut)
+    #Part.show(_cut)
     #Part.show(_axis)
 
     doc.removeObject('MotorCover')
