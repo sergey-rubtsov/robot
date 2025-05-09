@@ -5670,7 +5670,7 @@ motor_cover = motor_cover.cut(motor)
 # Part.show(ring)
 # Part.show(cover)
 # Part.show(motor)
-Part.show(motor_cover)
+# Part.show(motor_cover)
 # App.ActiveDocument.getObject("Shape").Label = "Eccentric"
 # App.ActiveDocument.getObject("Shape001").Label = "Cycloid"
 # App.ActiveDocument.getObject("Shape002").Label = "ContrCycloid"
