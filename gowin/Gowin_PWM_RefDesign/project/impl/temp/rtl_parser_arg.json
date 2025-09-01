@@ -1,0 +1,25 @@
+{
+ "Device" : "GW1N-9C",
+ "Files" : [
+  {
+   "Path" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/gowin_rpll/gowin_rpll.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/pwm/pwm.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/top.v",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+  "E:/work/work/Confidential_IP/code/PWM/IP/1N"
+ ],
+ "LoopLimit" : 2000,
+ "ResultFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/impl/temp/rtl_parser.result",
+ "Top" : "top",
+ "VerilogStd" : "verilog_2001",
+ "VhdlStd" : "vhdl_93"
+}

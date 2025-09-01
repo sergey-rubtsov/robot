@@ -1,0 +1,15 @@
+//Copyright (C)2014-2025 Gowin Semiconductor Corporation.
+//All rights reserved. 
+//File Title: Physical Constraints file
+//Tool Version: V1.9.11.02 (64-bit)
+//Part Number: GW1N-LV9QN88C6/I5
+//Device: GW1N-9
+//Device Version: C
+//Created Time: Thu 04 03 15:52:54 2025
+
+IO_LOC "pclk" 34;
+IO_PORT "pclk" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=8 BANK_VCCIO=3.3;
+IO_LOC "pwm" 26;
+IO_PORT "pwm" IO_TYPE=LVCMOS33 PULL_MODE=NONE DRIVE=24 BANK_VCCIO=3.3;
+IO_LOC "clk" 11;
+IO_PORT "clk" IO_TYPE=LVCMOS33 PULL_MODE=NONE BANK_VCCIO=3.3;

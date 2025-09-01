@@ -1,0 +1,20 @@
+-d E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\impl\gwsynthesis\fpga_project.vg
+-p GW1N-9C-QFN88-6
+-pn GW1N-LV9QN88C6/I5
+-cst E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\src\fpga_project.cst
+-cfg E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\impl\pnr\device.cfg
+-sdc E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\src\fpga_project.sdc
+-bit
+-tr
+-ph
+-o
+-timing
+-cst_error
+-convert_sdp32_36_to_sdp16_18
+-place_option 0
+-route_option 0
+-clock_route_order 0
+-correct_hold 1
+-route_maxfan 23
+-global_freq 50.000
+-rtl_gao

@@ -1,0 +1,38 @@
+[
+ {
+  "InstFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/top.v",
+  "InstLine" : 2,
+  "InstName" : "top",
+  "ModuleFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/top.v",
+  "ModuleLine" : 2,
+  "ModuleName" : "top",
+  "SubInsts" : [
+   {
+    "InstFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/top.v",
+    "InstLine" : 22,
+    "InstName" : "Gowin_PLL",
+    "ModuleFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/gowin_rpll/gowin_rpll.v",
+    "ModuleLine" : 10,
+    "ModuleName" : "Gowin_rPLL"
+   },
+   {
+    "InstFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/top.v",
+    "InstLine" : 38,
+    "InstName" : "dut",
+    "ModuleFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/pwm/pwm.v",
+    "ModuleLine" : 494,
+    "ModuleName" : "PWM_Top",
+    "SubInsts" : [
+     {
+      "InstFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/pwm/pwm.v",
+      "InstLine" : 521,
+      "InstName" : "u_pwm",
+      "ModuleFile" : "E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/src/pwm/pwm.v",
+      "ModuleLine" : 10,
+      "ModuleName" : "~pwm.PWM_Top"
+     }
+    ]
+   }
+  ]
+ }
+]

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE gowin-synthesis-project>
+<Project>
+    <Version>beta</Version>
+    <Device id="GW1N-9C" package="QFN88" speed="6" partNumber="GW1N-LV9QN88C6/I5"/>
+    <FileList>
+        <File path="E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\src\gowin_rpll\gowin_rpll.v" type="verilog"/>
+        <File path="E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\src\pwm\pwm.v" type="verilog"/>
+        <File path="E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\src\top.v" type="verilog"/>
+        <File path="C:\Gowin\Gowin_V1.9.11.02_x64\IDE\data\ipcores\GVIO\GW_GVIO_0\gw_gvio_ao_top.v" type="gvio"/>
+        <File path="C:\Gowin\Gowin_V1.9.11.02_x64\IDE\data\ipcores\GVIO\GW_GVIO_CON\gw_gvio_con_top.v" type="gvio"/>
+        <File path="C:\Gowin\Gowin_V1.9.11.02_x64\IDE\data\ipcores\gw_jtag.v" type="gvio"/>
+        <File path="E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\impl\gwsynthesis\GVIO\gw_gvio_top.v" type="gvio"/>
+    </FileList>
+    <OptionList>
+        <Option type="disable_insert_pad" value="0"/>
+        <Option type="global_freq" value="50.000"/>
+        <Option type="include_path" value="C:/Gowin/Gowin_V1.9.11.02_x64/IDE/data/ipcores/GVIO"/>
+        <Option type="include_path" value="E:/myWork/IP/releaseVerify/version/1.9.11.02/Gowin_PWM_RefDesign/project/impl/gwsynthesis/GVIO"/>
+        <Option type="include_path" value="E:/work/work/Confidential_IP/code/PWM/IP/1N"/>
+        <Option type="looplimit" value="2000"/>
+        <Option type="output_file" value="E:\myWork\IP\releaseVerify\version\1.9.11.02\Gowin_PWM_RefDesign\project\impl\gwsynthesis\fpga_project.vg"/>
+        <Option type="print_all_synthesis_warning" value="0"/>
+        <Option type="ram_rw_check" value="0"/>
+        <Option type="top_module" value="top"/>
+        <Option type="vcc" value="1.2"/>
+        <Option type="verilog_language" value="verilog-2001"/>
+        <Option type="vhdl_language" value="vhdl-1993"/>
+    </OptionList>
+</Project>

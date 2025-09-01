@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="top" T_Register="223(0)" T_Alu="19(0)" T_Lut="255(0)" T_Ssram="6(0)">
+ <SubModule name="gw_gvio_inst_0" Register="164" Lut="166" Ssram="6" T_Register="164(164)" T_Lut="166(166)" T_Ssram="6(6)"/>
+ <SubModule name="Gowin_PLL"/>
+ <SubModule name="dut" Register="59" Alu="19" Lut="89" T_Register="59(59)" T_Alu="19(19)" T_Lut="89(89)"/>
+</Module>
