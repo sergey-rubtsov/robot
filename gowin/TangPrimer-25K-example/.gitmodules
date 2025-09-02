@@ -1,0 +1,9 @@
+[submodule "LicheeTang25k_SDRAM"]
+	path = LicheeTang25k_SDRAM
+	url = https://github.com/ZiyangYE/LicheeTang25k_SDRAM
+[submodule "LicheeTang25k_VexRV_micro"]
+	path = LicheeTang25k_VexRV_micro
+	url = https://github.com/ZiyangYE/LicheeTang25k_VexRV_micro.git
+[submodule "nestang_primer-25K"]
+	path = nestang_primer-25K
+	url = https://github.com/kyonmiriam/nestang_primer-25K

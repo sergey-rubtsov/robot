@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Module name="top_demo" T_Register="204(0)" T_Alu="5(0)" T_Lut="362(0)">
+ <SubModule name="button0" Register="25" Lut="51" T_Register="25(25)" T_Lut="51(51)"/>
+ <SubModule name="button1" Register="25" Lut="50" T_Register="25(25)" T_Lut="50(50)"/>
+ <SubModule name="button2" Register="25" Lut="50" T_Register="25(25)" T_Lut="50(50)"/>
+ <SubModule name="button3" Register="25" Lut="50" T_Register="25(25)" T_Lut="50(50)"/>
+ <SubModule name="digitaltube" Register="61" Alu="5" Lut="90" T_Register="61(61)" T_Alu="5(5)" T_Lut="90(90)"/>
+ <SubModule name="led" Register="43" Lut="71" T_Register="43(43)" T_Lut="71(71)"/>
+</Module>

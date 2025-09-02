@@ -1,0 +1,29 @@
+{
+ "Device" : "GW5A-25A",
+ "Files" : [
+  {
+   "Path" : "/Users/serg/robot/robot/gowin/TangPrimer-25K-example/pmod_digitalTube-2bit/src/driver_Button.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "/Users/serg/robot/robot/gowin/TangPrimer-25K-example/pmod_digitalTube-2bit/src/driver_DigitalTube.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "/Users/serg/robot/robot/gowin/TangPrimer-25K-example/pmod_digitalTube-2bit/src/driver_Led.v",
+   "Type" : "verilog"
+  },
+  {
+   "Path" : "/Users/serg/robot/robot/gowin/TangPrimer-25K-example/pmod_digitalTube-2bit/src/top_demo.v",
+   "Type" : "verilog"
+  }
+ ],
+ "IncludePath" : [
+
+ ],
+ "LoopLimit" : 2000,
+ "ResultFile" : "/Users/serg/robot/robot/gowin/TangPrimer-25K-example/pmod_digitalTube-2bit/impl/temp/rtl_parser.result",
+ "Top" : "top_demo",
+ "VerilogStd" : "verilog_2001",
+ "VhdlStd" : "vhdl_93"
+}
